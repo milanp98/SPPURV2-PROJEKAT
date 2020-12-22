@@ -30,8 +30,8 @@ MODULE_LICENSE("Dual BSD/GPL");
 
 #define TIMER_SEC      0
 #define TIMER_NANO_SEC     2000
-static struct hrtimer blink_timer;
-static ktime_t kt;
+//static struct hrtimer blink_timer;
+//static ktime_t kt;
 
 
 /* GPIO registers base address. */
@@ -462,7 +462,8 @@ int gpio_driver_init(void)
     }
 
     /* Initialize GPIO pins. */
-    /* LEDS */
+    
+    SetInternalPullUpDown(GPIO_04, PULL_UP);
     SetGpioPinDirection(GPIO_04, GPIO_DIRECTION_IN);
 
 
@@ -483,22 +484,16 @@ int gpio_driver_init(void)
     SetGpioPinDirection(GPIO_22, GPIO_DIRECTION_IN);
 
 
-      /* Timer  */
-	hrtimer_init(&blink_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	kt = ktime_set(TIMER_SEC, TIMER_NANO_SEC);
-	blink_timer.function = &blink_timer_callback;
-	hrtimer_start(&blink_timer, kt, HRTIMER_MODE_REL);
-
 	return 0;
 
 
 
-fail_irq:
-    /* Unmap GPIO Physical address space. */
+/*fail_irq:
+    //Unmap GPIO Physical address space. 
     if (virt_gpio_base)
     {
         iounmap(virt_gpio_base);
-    }
+    }*/
 fail_no_virt_mem:
     /* Freeing buffer gpio_driver_buffer. */
     if (gpio_driver_buffer)
@@ -523,11 +518,6 @@ fail_no_mem:
 void gpio_driver_exit(void)
 {
     printk(KERN_INFO "Removing gpio_driver module\n");
-
-    /* Release IRQ and handler. */
-    disable_irq(irq_gpio3);
-    free_irq(irq_gpio3, h_irq_gpio3);
-    gpio_free(GPIO_03);
 
     /* Clear GPIO pins. */
     ClearGpioPin(GPIO_04);
@@ -592,7 +582,8 @@ static ssize_t gpio_driver_read(struct file *filp, char *buf, size_t len, loff_t
         gpio_driver_buffer[0] = '1';
     } else {
         gpio_driver_buffer[0] = '0';
-
+	}
+	//printk(KERN_INFO "Pin value: %d\n", GetGpioPinValue(GPIO_04));
     //gpio_driver_buffer[0] = GetGpioPinValue(GPIO_04);
 
     if (*f_pos == 0)

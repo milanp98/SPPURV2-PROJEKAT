@@ -41,17 +41,14 @@ int main()
     /* Read from dummy file. */
 	while (1){
 		ret_val = read(file_desc, tmp, BUF_LEN);
-
+		printf("%c", tmp[0]);
 		if (tmp[0] == '0' && stara == '1'){
 			brojac++;
             printf("Brojac = %d", brojac);
 		}
 
         stara = tmp[0];
-        
-		if (){  //semafor
-			break;
-		}
+
     }
 	
 	obrtaji = brojac / brpr;
