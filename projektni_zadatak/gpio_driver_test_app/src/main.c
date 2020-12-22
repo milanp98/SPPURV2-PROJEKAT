@@ -44,10 +44,11 @@ int main()
 
 		if (tmp[0] == '0' && stara == '1'){
 			brojac++;
+            printf("Brojac = %d", brojac);
 		}
 
         stara = tmp[0];
-
+        
 		if (){  //semafor
 			break;
 		}
