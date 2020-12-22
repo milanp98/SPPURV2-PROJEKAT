@@ -13,6 +13,7 @@ int main()
     int file_desc;
     int ret_val;
     char tmp[BUF_LEN];
+    char stara = '1';
 	
 	int brpr;
 	int brojac = 0;
@@ -33,13 +34,21 @@ int main()
     /* Write to dummy file. */
     //ret_val = write(file_desc, tmp, BUF_LEN);
 
+    ret_val = read(file_desc, tmp, BUF_LEN);
+
+    stara = tmp[0];
+
     /* Read from dummy file. */
 	while (1){
 		ret_val = read(file_desc, tmp, BUF_LEN);
-		if (ret_val == 1){
+
+		if (tmp[0] == '0' && stara == '1'){
 			brojac++;
 		}
-		if (){
+
+        stara = tmp[0];
+
+		if (){  //semafor
 			break;
 		}
     }

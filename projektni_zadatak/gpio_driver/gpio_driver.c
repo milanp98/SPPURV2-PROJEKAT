@@ -263,17 +263,17 @@ void SetInternalPullUpDown(char pin, PUD pull)
        to remove the current Pull-up/down). */
     iowrite32(pull, virt_gpio_base + gppud_offset);
 
-    /* Wait 150 cycles – this provides the required set-up time for the control signal */
+    /* Wait 150 cycles ï¿½ this provides the required set-up time for the control signal */
 
     /* Write to GPPUDCLK0/1 to clock the control signal into the GPIO pads you wish to
-       modify – NOTE only the pads which receive a clock will be modified, all others will
+       modify ï¿½ NOTE only the pads which receive a clock will be modified, all others will
        retain their previous state. */
     tmp = ioread32(virt_gpio_base + gppudclk_offset);
     mask = 0x1 << pin;
     tmp |= mask;
     iowrite32(tmp, virt_gpio_base + gppudclk_offset);
 
-    /* Wait 150 cycles – this provides the required hold time for the control signal */
+    /* Wait 150 cycles ï¿½ this provides the required hold time for the control signal */
 
     /* Write to GPPUD to remove the control signal. */
     iowrite32(PULL_NONE, virt_gpio_base + gppud_offset);
@@ -391,11 +391,7 @@ char GetGpioPinValue(char pin)
 
 
 
-
-
-
-
-#define TEST
+/*#define TEST
 
 int stara = 1;
 int nova = 0;
@@ -417,13 +413,7 @@ static enum hrtimer_restart blink_timer_callback(struct hrtimer *param) {
    
    hrtimer_forward(&blink_timer, ktime_get(), kt);
    return HRTIMER_RESTART;
-}
-
-
-
-
-
-
+}*/
 
 
 /*
@@ -597,6 +587,13 @@ static ssize_t gpio_driver_read(struct file *filp, char *buf, size_t len, loff_t
 {
     /* Size of valid data in gpio_driver - data to send in user space. */
     int data_size = 0;
+
+    if (GetGpioPinValue(GPIO_04)) {
+        gpio_driver_buffer[0] = '1';
+    } else {
+        gpio_driver_buffer[0] = '0';
+
+    //gpio_driver_buffer[0] = GetGpioPinValue(GPIO_04);
 
     if (*f_pos == 0)
     {
