@@ -11,51 +11,61 @@
 int main()
 {
     int file_desc;
-    int ret_val;
     char tmp[BUF_LEN];
-    char stara = '1';
+    char stara = 'e';	//samo char stara; staviti
 	
-	int brpr;
+	int brPeraca;
 	int brojac = 0;
-	int obrtaji;
+	int brObrtaja;
 	
+	printf("***Brojac obrtaja***\n\n");
 	printf("Unesite broj peraca: ");
-	scanf("%d", &brpr);
+	scanf("%d", &brPeraca);
 
-    /* Open dummy file. */
-    file_desc = open("/dev/gpio_driver", O_RDWR);
+    file_desc = open("/dev/gpio_driver", O_RDWR);			// Otvaranje modula
 
     if(file_desc < 0)
     {
-        printf("Error, 'dummy' not opened\n");
+        printf("Greska pri otvaranju modula!\n");
         return -1;
     }
 
-    /* Write to dummy file. */
-    //ret_val = write(file_desc, tmp, BUF_LEN);
+    if(read(file_desc, tmp, BUF_LEN) == -1){				// Citanje iz modula
+		printf("\nGreska pri citanju iz modula!\n");
+		return -1;
+	}
+	
+    stara = tmp[0];											// Pocetna vrednost
+	printf("Pocetna vrednost: %c", stara);
+	
+	close(file_desc);										// Zatvaranje modula
 
-    ret_val = read(file_desc, tmp, BUF_LEN);
-
-    stara = tmp[0];
-
-    /* Read from dummy file. */
 	while (1){
-		ret_val = read(file_desc, tmp, BUF_LEN);
-		printf("%c", tmp[0]);
-		if (tmp[0] == '0' && stara == '1'){
-			brojac++;
-            printf("Brojac = %d", brojac);
+		file_desc = open("/dev/gpio_driver", O_RDWR);
+
+		if(file_desc < 0)
+		{
+			printf("\nGreska pri otvaranju modula!\n");
+			return -1;
 		}
-
-        stara = tmp[0];
-
+		
+		if(read(file_desc, tmp, BUF_LEN) != -1){
+			if (tmp[0] == '0' && stara == '1'){
+				brojac++;
+				printf("Brojac = %d\n", brojac);
+			}
+			stara = tmp[0];
+		}
+		else printf("\nGreska pri citanju iz modula!\n");
+		
+		
+		close(file_desc);
     }
 	
-	obrtaji = brojac / brpr;
+	brObrtaja = brojac / brPeraca;
 	
-	printf ("Broj obrtaja je %d", obrtaji);
+	printf ("Broj obrtaja je %d", brObrtaja);
 	
-    /* Close dummy file. */
     close(file_desc);
     
     return 0;

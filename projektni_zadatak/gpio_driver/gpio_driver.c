@@ -463,7 +463,7 @@ int gpio_driver_init(void)
 
     /* Initialize GPIO pins. */
     
-    SetInternalPullUpDown(GPIO_04, PULL_UP);
+    //SetInternalPullUpDown(GPIO_04, PULL_DOWN);
     SetGpioPinDirection(GPIO_04, GPIO_DIRECTION_IN);
 
 
@@ -579,9 +579,9 @@ static ssize_t gpio_driver_read(struct file *filp, char *buf, size_t len, loff_t
     int data_size = 0;
 
     if (GetGpioPinValue(GPIO_04)) {
-        gpio_driver_buffer[0] = '1';
-    } else {
         gpio_driver_buffer[0] = '0';
+    } else {
+        gpio_driver_buffer[0] = '1';
 	}
 	//printk(KERN_INFO "Pin value: %d\n", GetGpioPinValue(GPIO_04));
     //gpio_driver_buffer[0] = GetGpioPinValue(GPIO_04);
