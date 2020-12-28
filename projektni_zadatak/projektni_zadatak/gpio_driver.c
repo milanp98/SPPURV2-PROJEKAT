@@ -463,7 +463,7 @@ int gpio_driver_init(void)
 
     /* Initialize GPIO pins. */
     
-    SetInternalPullUpDown(GPIO_04, PULL_UP);
+    //SetInternalPullUpDown(GPIO_04, PULL_DOWN);
     SetGpioPinDirection(GPIO_04, GPIO_DIRECTION_IN);
 
 
