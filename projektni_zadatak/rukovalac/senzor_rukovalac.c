@@ -143,35 +143,35 @@ typedef enum {GPIO_DIRECTION_IN = 0, GPIO_DIRECTION_OUT = 1} DIRECTION;
 #define GPIO_26 (26)
 #define GPIO_27 (27)
 
-/* Declaration of gpio_driver.c functions */
-int gpio_driver_init(void);
-void gpio_driver_exit(void);
-static int gpio_driver_open(struct inode *, struct file *);
-static int gpio_driver_release(struct inode *, struct file *);
-static ssize_t gpio_driver_read(struct file *, char *buf, size_t , loff_t *);
-static ssize_t gpio_driver_write(struct file *, const char *buf, size_t , loff_t *);
+/* Declaration of senzor_rukovalac.c functions */
+int senzor_rukovalac_init(void);
+void senzor_rukovalac_exit(void);
+static int senzor_rukovalac_open(struct inode *, struct file *);
+static int senzor_rukovalac_release(struct inode *, struct file *);
+static ssize_t senzor_rukovalac_read(struct file *, char *buf, size_t , loff_t *);
+static ssize_t senzor_rukovalac_write(struct file *, const char *buf, size_t , loff_t *);
 
 /* Structure that declares the usual file access functions. */
-struct file_operations gpio_driver_fops =
+struct file_operations senzor_rukovalac_fops =
 {
-    open    :   gpio_driver_open,
-    release :   gpio_driver_release,
-    read    :   gpio_driver_read,
-    write   :   gpio_driver_write
+    open    :   senzor_rukovalac_open,
+    release :   senzor_rukovalac_release,
+    read    :   senzor_rukovalac_read,
+    write   :   senzor_rukovalac_write
 };
 
 /* Declaration of the init and exit functions. */
-module_init(gpio_driver_init);
-module_exit(gpio_driver_exit);
+module_init(senzor_rukovalac_init);
+module_exit(senzor_rukovalac_exit);
 
 /* Global variables of the driver */
 
 /* Major number. */
-int gpio_driver_major;
+int senzor_rukovalac_major;
 
 /* Buffer to store data. */
 #define BUF_LEN 80
-char* gpio_driver_buffer;
+char* senzor_rukovalac_buffer;
 
 /* Virtual address where the physical GPIO address is mapped */
 void* virt_gpio_base;
@@ -425,33 +425,33 @@ static enum hrtimer_restart blink_timer_callback(struct hrtimer *param) {
  *  5. Initialize GPIO pins
  *  6. Initialize IRQ and register handler
  */
-int gpio_driver_init(void)
+int senzor_rukovalac_init(void)
 {
     int result = -1;
 
-    printk(KERN_INFO "Inserting gpio_driver module\n");
+    printk(KERN_INFO "Inserting senzor_rukovalac module\n");
 
     /* Registering device. */
-    result = register_chrdev(0, "gpio_driver", &gpio_driver_fops);
+    result = register_chrdev(0, "senzor_rukovalac", &senzor_rukovalac_fops);
     if (result < 0)
     {
-        printk(KERN_INFO "gpio_driver: cannot obtain major number %d\n", gpio_driver_major);
+        printk(KERN_INFO "senzor_rukovalac: cannot obtain major number %d\n", senzor_rukovalac_major);
         return result;
     }
 
-    gpio_driver_major = result;
-    printk(KERN_INFO "gpio_driver major number is %d\n", gpio_driver_major);
+    senzor_rukovalac_major = result;
+    printk(KERN_INFO "senzor_rukovalac major number is %d\n", senzor_rukovalac_major);
 
     /* Allocating memory for the buffer. */
-    gpio_driver_buffer = kmalloc(BUF_LEN, GFP_KERNEL);
-    if (!gpio_driver_buffer)
+    senzor_rukovalac_buffer = kmalloc(BUF_LEN, GFP_KERNEL);
+    if (!senzor_rukovalac_buffer)
     {
         result = -ENOMEM;
         goto fail_no_mem;
     }
 
     /* Initialize data buffer. */
-    memset(gpio_driver_buffer, 0, BUF_LEN);
+    memset(senzor_rukovalac_buffer, 0, BUF_LEN);
 
     /* map the GPIO register space from PHYSICAL address space to virtual address space */
     virt_gpio_base = ioremap(GPIO_BASE, GPIO_ADDR_SPACE_LEN);
@@ -463,7 +463,7 @@ int gpio_driver_init(void)
 
     /* Initialize GPIO pins. */
     
-    //SetInternalPullUpDown(GPIO_04, PULL_DOWN);
+    SetInternalPullUpDown(GPIO_04, PULL_UP);
     SetGpioPinDirection(GPIO_04, GPIO_DIRECTION_IN);
 
 
@@ -495,14 +495,14 @@ int gpio_driver_init(void)
         iounmap(virt_gpio_base);
     }*/
 fail_no_virt_mem:
-    /* Freeing buffer gpio_driver_buffer. */
-    if (gpio_driver_buffer)
+    /* Freeing buffer senzor_rukovalac_buffer. */
+    if (senzor_rukovalac_buffer)
     {
-        kfree(gpio_driver_buffer);
+        kfree(senzor_rukovalac_buffer);
     }
 fail_no_mem:
     /* Freeing the major number. */
-    unregister_chrdev(gpio_driver_major, "gpio_driver");
+    unregister_chrdev(senzor_rukovalac_major, "senzor_rukovalac");
 	
     return result;
 }
@@ -515,9 +515,9 @@ fail_no_mem:
  *  4. Free buffer
  *  5. Unregister device driver
  */
-void gpio_driver_exit(void)
+void senzor_rukovalac_exit(void)
 {
-    printk(KERN_INFO "Removing gpio_driver module\n");
+    printk(KERN_INFO "Removing senzor_rukovalac module\n");
 
     /* Clear GPIO pins. */
     ClearGpioPin(GPIO_04);
@@ -533,18 +533,18 @@ void gpio_driver_exit(void)
         iounmap(virt_gpio_base);
     }
 
-    /* Freeing buffer gpio_driver_buffer. */
-    if (gpio_driver_buffer)
+    /* Freeing buffer senzor_rukovalac_buffer. */
+    if (senzor_rukovalac_buffer)
     {
-        kfree(gpio_driver_buffer);
+        kfree(senzor_rukovalac_buffer);
     }
 
     /* Freeing the major number. */
-    unregister_chrdev(gpio_driver_major, "gpio_driver");
+    unregister_chrdev(senzor_rukovalac_major, "senzor_rukovalac");
 }
 
 /* File open function. */
-static int gpio_driver_open(struct inode *inode, struct file *filp)
+static int senzor_rukovalac_open(struct inode *inode, struct file *filp)
 {
     /* Initialize driver variables here. */
 
@@ -555,7 +555,7 @@ static int gpio_driver_open(struct inode *inode, struct file *filp)
 }
 
 /* File close function. */
-static int gpio_driver_release(struct inode *inode, struct file *filp)
+static int senzor_rukovalac_release(struct inode *inode, struct file *filp)
 {
     /* Success. */
     return 0;
@@ -570,29 +570,29 @@ static int gpio_driver_release(struct inode *inode, struct file *filp)
  *           value as the usual counter in the user space function (fread);
  *   f_pos - a position of where to start reading the file;
  *  Operation:
- *   The gpio_driver_read function transfers data from the driver buffer (gpio_driver_buffer)
+ *   The senzor_rukovalac_read function transfers data from the driver buffer (senzor_rukovalac_buffer)
  *   to user space with the function copy_to_user.
  */
-static ssize_t gpio_driver_read(struct file *filp, char *buf, size_t len, loff_t *f_pos)
+static ssize_t senzor_rukovalac_read(struct file *filp, char *buf, size_t len, loff_t *f_pos)
 {
-    /* Size of valid data in gpio_driver - data to send in user space. */
+    /* Size of valid data in senzor_rukovalac - data to send in user space. */
     int data_size = 0;
 
     if (GetGpioPinValue(GPIO_04)) {
-        gpio_driver_buffer[0] = '0';
+        senzor_rukovalac_buffer[0] = '0';
     } else {
-        gpio_driver_buffer[0] = '1';
+        senzor_rukovalac_buffer[0] = '1';
 	}
 	//printk(KERN_INFO "Pin value: %d\n", GetGpioPinValue(GPIO_04));
-    //gpio_driver_buffer[0] = GetGpioPinValue(GPIO_04);
+    //senzor_rukovalac_buffer[0] = GetGpioPinValue(GPIO_04);
 
     if (*f_pos == 0)
     {
         /* Get size of valid data. */
-        data_size = strlen(gpio_driver_buffer);
+        data_size = strlen(senzor_rukovalac_buffer);
 
         /* Send data to user space. */
-        if (copy_to_user(buf, gpio_driver_buffer, data_size) != 0)
+        if (copy_to_user(buf, senzor_rukovalac_buffer, data_size) != 0)
         {
             return -EFAULT;
         }
@@ -620,13 +620,13 @@ static ssize_t gpio_driver_read(struct file *filp, char *buf, size_t len, loff_t
  *  Operation:
  *   The function copy_from_user transfers the data from user space to kernel space.
  */
-static ssize_t gpio_driver_write(struct file *filp, const char *buf, size_t len, loff_t *f_pos)
+static ssize_t senzor_rukovalac_write(struct file *filp, const char *buf, size_t len, loff_t *f_pos)
 {
     /* Reset memory. */
-    memset(gpio_driver_buffer, 0, BUF_LEN);
+    memset(senzor_rukovalac_buffer, 0, BUF_LEN);
 
     /* Get data from user space.*/
-    if (copy_from_user(gpio_driver_buffer, buf, len) != 0)
+    if (copy_from_user(senzor_rukovalac_buffer, buf, len) != 0)
     {
         return -EFAULT;
     }

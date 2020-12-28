@@ -1,13 +1,13 @@
-TARGET := gpio_driver.ko
+TARGET := senzor_rukovalac.ko
 
-MDIR := arch/arm/gpio_driver
+MDIR := arch/arm/senzor_rukovalac
 
 CURRENT := $(shell uname -r)
 KDIR := /lib/modules/$(CURRENT)/build
 PWD := $(shell pwd)
 DEST := /lib/modules/$(CURRENT)/kernel/$(MDIR)
 
-obj-m := gpio_driver.o
+obj-m := senzor_rukovalac.o
 
 default:
 	$(MAKE) -I $(KDIR)/arch/arm/include/asm/ -C $(KDIR) M=$(PWD)

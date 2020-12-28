@@ -81,7 +81,7 @@ int main()
 		brojac = 0;
 		re = 'n';
 		
-		file_desc = open("/dev/gpio_driver", O_RDWR);			// Otvaranje modula
+		file_desc = open("/dev/senzor_rukovalac", O_RDWR);			// Otvaranje modula
 
 		if(file_desc < 0)
 		{
@@ -109,7 +109,7 @@ int main()
 			if(kraj) break;
 			pthread_mutex_unlock(&mKraj);
 			
-			file_desc = open("/dev/gpio_driver", O_RDWR);
+			file_desc = open("/dev/senzor_rukovalac", O_RDWR);
 
 			if(file_desc < 0)
 			{

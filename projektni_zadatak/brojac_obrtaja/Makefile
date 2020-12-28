@@ -24,7 +24,7 @@ LIB_DEBUG = $(LIB)
 LDFLAGS_DEBUG = $(LDFLAGS)
 OBJDIR_DEBUG = obj/Debug
 DEP_DEBUG =
-OUT_DEBUG = bin/Debug/gpio_driver_test_app
+OUT_DEBUG = bin/Debug/brojac_obrtaja
 
 OBJ_DEBUG = $(OBJDIR_DEBUG)/main.o
 
@@ -40,7 +40,7 @@ LIB_RELEASE = $(LIB)
 LDFLAGS_RELEASE = $(LDFLAGS)
 OBJDIR_RELEASE = obj/Release
 DEP_RELEASE =
-OUT_RELEASE = bin/Release/gpio_driver_test_app
+OUT_RELEASE = bin/Release/brojac_obrtaja
 
 OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o
 
