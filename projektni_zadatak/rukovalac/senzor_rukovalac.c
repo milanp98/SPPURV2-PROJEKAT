@@ -464,7 +464,6 @@ void senzor_rukovalac_exit(void)
     ClearGpioPin(GPIO_04);
 
     /* Set GPIO pins as inputs and disable pull-ups. */
-    
     SetInternalPullUpDown(GPIO_04, PULL_NONE);
     
     /* Unmap GPIO Physical address space. */
