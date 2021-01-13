@@ -28,12 +28,6 @@ MODULE_LICENSE("Dual BSD/GPL");
 //       total system ram is 0x3F000000 (1GB - 16MB)
 //       instead of 0x20000000 (512 MB)
 
-#define TIMER_SEC      0
-#define TIMER_NANO_SEC     2000
-//static struct hrtimer blink_timer;
-//static ktime_t kt;
-
-
 /* GPIO registers base address. */
 #define BCM2708_PERI_BASE   (0x3F000000)
 #define GPIO_BASE           (BCM2708_PERI_BASE + 0x200000)
@@ -389,33 +383,6 @@ char GetGpioPinValue(char pin)
     return (tmp >> pin);
 }
 
-
-
-/*#define TEST
-
-int stara = 1;
-int nova = 0;
-
-
-static enum hrtimer_restart blink_timer_callback(struct hrtimer *param) {
- #ifdef TEST
-	
-	nova = GetGpioPinValue(GPIO_04);
-	
-	if (nova - stara == -1){
-		
-	}
-	
-	stara = nova;
-
-
-#endif
-   
-   hrtimer_forward(&blink_timer, ktime_get(), kt);
-   return HRTIMER_RESTART;
-}*/
-
-
 /*
  * Initialization:
  *  1. Register device driver
@@ -466,34 +433,8 @@ int senzor_rukovalac_init(void)
     SetInternalPullUpDown(GPIO_04, PULL_UP);
     SetGpioPinDirection(GPIO_04, GPIO_DIRECTION_IN);
 
-
-    /* SWitches */
-    SetInternalPullUpDown(GPIO_12, PULL_UP);
-    SetGpioPinDirection(GPIO_12, GPIO_DIRECTION_IN);
-    SetInternalPullUpDown(GPIO_16, PULL_UP);
-    SetGpioPinDirection(GPIO_16, GPIO_DIRECTION_IN);
-    SetInternalPullUpDown(GPIO_20, PULL_UP);
-    SetGpioPinDirection(GPIO_20, GPIO_DIRECTION_IN);
-    SetInternalPullUpDown(GPIO_21, PULL_UP);
-    SetGpioPinDirection(GPIO_21, GPIO_DIRECTION_IN);
-
-    /* PushButtons */
-    SetInternalPullUpDown(GPIO_03, PULL_UP);
-    SetGpioPinDirection(GPIO_03, GPIO_DIRECTION_IN);
-    SetInternalPullUpDown(GPIO_22, PULL_UP);
-    SetGpioPinDirection(GPIO_22, GPIO_DIRECTION_IN);
-
-
 	return 0;
 
-
-
-/*fail_irq:
-    //Unmap GPIO Physical address space. 
-    if (virt_gpio_base)
-    {
-        iounmap(virt_gpio_base);
-    }*/
 fail_no_virt_mem:
     /* Freeing buffer senzor_rukovalac_buffer. */
     if (senzor_rukovalac_buffer)
@@ -524,9 +465,8 @@ void senzor_rukovalac_exit(void)
 
     /* Set GPIO pins as inputs and disable pull-ups. */
     
-    SetInternalPullUpDown(GPIO_12, PULL_NONE);
-    SetInternalPullUpDown(GPIO_03, PULL_NONE);
-
+    SetInternalPullUpDown(GPIO_04, PULL_NONE);
+    
     /* Unmap GPIO Physical address space. */
     if (virt_gpio_base)
     {
@@ -583,8 +523,6 @@ static ssize_t senzor_rukovalac_read(struct file *filp, char *buf, size_t len, l
     } else {
         senzor_rukovalac_buffer[0] = '1';
 	}
-	//printk(KERN_INFO "Pin value: %d\n", GetGpioPinValue(GPIO_04));
-    //senzor_rukovalac_buffer[0] = GetGpioPinValue(GPIO_04);
 
     if (*f_pos == 0)
     {
